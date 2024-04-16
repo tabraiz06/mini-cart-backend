@@ -1,5 +1,7 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
+const fs = require("fs");
 const Product = require("../models/productModel");
 const verifyToken = require("../middleware/verifyToken");
 // for normal users
@@ -21,20 +23,42 @@ router.get("/products/seller", verifyToken, async (req, res) => {
   }
 });
 // add products by seller
-router.post("/add", verifyToken, async (req, res) => {
-  const { p_catagery, p_name, p_discription, p_image, p_price, sellerId } =
-    req.body;
+// Set up multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Create the 'uploads' directory if it doesn't exist
+    const dir = "./uploads/";
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.post("/image", upload.single("image"), async (req, res) => {
+  console.log(req.file);
+});
+
+router.post("/add", verifyToken, upload.single("p_image"), async (req, res) => {
+  const { p_catagery, p_name, p_discription, p_price, sellerId } = req.body;
+  const imagePath = req.file.filename;
+
   try {
-    const product = Product.create({
-      p_catagery,
-      p_name,
-      p_discription,
-      p_image,
-      p_price,
+    const product = await Product.create({
+      p_catagery: req.body.p_catagery,
+      p_name: req.body.p_name,
+      p_discription: req.body.p_discription,
+      p_image: imagePath,
+      p_price: req.body.p_price,
       userId: req.user,
-      sellerId,
+      sellerId: req.body.sellerId,
     });
-    res.status(200).json({ message: "product added successfully" });
+    res.status(200).json({ message: "product added successfully", product });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -54,6 +78,7 @@ router.get("/products/search", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+// view single product
 router.get("/products/:id", async (req, res) => {
   try {
     const product = await Product.findById({ _id: req.params.id });
