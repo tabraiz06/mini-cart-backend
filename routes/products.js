@@ -40,9 +40,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/image", upload.single("image"), async (req, res) => {
-  console.log(req.file);
-});
+router.post("/image", upload.single("image"), async (req, res) => {});
 
 router.post("/add", verifyToken, upload.single("p_image"), async (req, res) => {
   const { p_catagery, p_name, p_discription, p_price, sellerId } = req.body;
@@ -66,7 +64,7 @@ router.post("/add", verifyToken, upload.single("p_image"), async (req, res) => {
 // filter the product list
 router.get("/products/search", async (req, res) => {
   const { p_name, p_catagery } = req.query;
-  console.log(req.query);
+
   try {
     const product = p_name
       ? await Product.find({ p_name })
@@ -94,7 +92,7 @@ router.get("/products/:id", async (req, res) => {
 //update the products by seller
 router.put("/products/:id", async (req, res) => {
   const { p_catagery, p_name, p_discription, p_image, p_price } = req.body;
-  console.log(req.body);
+
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       {
