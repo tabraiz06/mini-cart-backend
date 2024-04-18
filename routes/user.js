@@ -8,7 +8,7 @@ const verifyToken = require("../middleware/verifyToken");
 const secret_key = "ABC";
 
 router.post("/register", async (req, res) => {
-  console.log(req.body.data);
+  
   const { name, email, password, phoneNumber, isAdmin, sellerId } =
     req.body.data;
 
