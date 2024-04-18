@@ -28,6 +28,7 @@ const UsersSchema = mongoose.Schema(
     sellerId: {
       type: String,
       unique: true,
+      default:null
     },
     isAdmin: {
       type: String,
