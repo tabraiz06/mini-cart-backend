@@ -12,6 +12,15 @@ router.get("/orders", verifyToken, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+// get all past orders
+router.get("/all/orders", async (req, res) => {
+  try {
+    const allPastOrdes = await Order.find().populate("userId", "-password");
+    res.status(200).json(allPastOrdes);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
 
 // create an order by normal users
 router.post("/create/order", verifyToken, async (req, res) => {
