@@ -49,7 +49,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/signin", async (req, res) => {
   const { email, password, phoneNumber } = req.body;
-  console.log(req.body);
+
   try {
     const userExist = phoneNumber
       ? await Users.findOne({ phoneNumber })
